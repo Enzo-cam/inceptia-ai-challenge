@@ -1,10 +1,10 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-interface LoginCredentials {
-  email: string;
-  password: string;
-}
+// interface LoginCredentials {
+//   email: string;
+//   password: string;
+// }
 
 // Configura la instancia de Axios y definiendo la URL
 const api = axios.create({
@@ -17,7 +17,8 @@ const api = axios.create({
 // Async thunk para el login
 export const getUser = createAsyncThunk(
   'user/login',
-  async ({ email, password }: LoginCredentials, { rejectWithValue }) => {
+  // LoginCredentials
+  async ({ email, password }, { rejectWithValue }) => {
     try {
       const response = await api.post('/login/', { email, password });
       return response.data; 
