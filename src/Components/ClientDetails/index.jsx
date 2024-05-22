@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
+import Filters from "../DateFilter";
 
 const TableClientDetails = ({ data }) => {
   const [dataBot, setDataBot] = useState([]);
@@ -97,12 +98,16 @@ const TableClientDetails = ({ data }) => {
 
   return (
     <div>
-      <input
-        type="text"
-        className="text-left w-80 p-2 mb-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-        placeholder="Buscar por ID, Teléfono, DNI, Grupo, Orden, etc."
-        onChange={onChange}
-      />
+      <div className="flex justify-between">
+        <input
+          type="text"
+          className="text-left w-96 p-1 mb-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+          placeholder="Buscar por ID, Teléfono, DNI, Grupo, Orden o Estado"
+          onChange={onChange}
+        />
+
+        <Filters />
+      </div>
 
       <DataTable
         fixedHeaderScrollHeight="full"

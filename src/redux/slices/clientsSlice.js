@@ -1,17 +1,32 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
 
+const initialState = {
+  bots: [],
+  inboundCases: [],
+  loading: false,
+  error: null,
+  dateFilter: {
+    // Asegúrate de tener esto en el estado inicial
+    from: "",
+    until: "",
+  },
+};
 
+// Thunk para obtener los clientes
 export const getClients = createAsyncThunk(
-    "clients/getClients",
+  "clients/getClients",
   async (_, { getState, rejectWithValue }) => {
     try {
       const { user } = getState();
-      const response = await axios.get('https://admindev.inceptia.ai/api/v1/clients/', {
-        headers: {
-          'Authorization': `JWT ${user.token}`
+      const response = await axios.get(
+        "https://admindev.inceptia.ai/api/v1/clients/",
+        {
+          headers: {
+            Authorization: `JWT ${user.token}`,
+          },
         }
-      });
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -19,67 +34,72 @@ export const getClients = createAsyncThunk(
   }
 );
 
-
+// Thunk para obtener los casos entrantes basados en el bot y fechas
 export const getInboundCases = createAsyncThunk(
   "clients/getInboundCases",
   async ({ botId, startDate, endDate }, { getState, rejectWithValue }) => {
-      try {
-          const { user } = getState();
-          const response = await axios.get(`https://admindev.inceptia.ai/api/v1/inbound-case/`, {
-              headers: {
-                  'Authorization': `JWT ${user.token}`
-              },
-              params: {
-                  bot: botId,
-                  local_updated__date__gte: startDate,
-                  local_updated__date__lte: endDate
-              }
-          });
-          return response.data;
-      } catch (error) {
-          return rejectWithValue(error.response.data);
-      }
+    try {
+      const { user } = getState();
+      const response = await axios.get(
+        "https://admindev.inceptia.ai/api/v1/inbound-case/",
+        {
+          headers: {
+            Authorization: `JWT ${user.token}`,
+          },
+          params: {
+            bot: botId,
+            local_updated__date__gte: startDate,
+            local_updated__date__lte: endDate,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
   }
 );
 
-// Definición del slice de clients
+// Slice de Redux para manejar el estado de los clientes y sus casos
 const clientsSlice = createSlice({
-  name: 'clients',
-  initialState: {
-    bots: [],
-    inboundCases: [],  // Añadir un nuevo campo para almacenar los casos
-    loading: false,
-    error: null,
+  name: "clients",
+  initialState,
+  reducers: {
+    setFromDate: (state, action) => {
+      state.dateFilter.from = action.payload;
+    },
+    setUntilDate: (state, action) => {
+      state.dateFilter.until = action.payload;
+    },
   },
-  reducers: {},
   extraReducers: (builder) => {
     builder
-      // Handlers para getClients
       .addCase(getClients.pending, (state) => {
-        state.loading = true;
+        state.loadingBots = true;
+        state.errorBots = null;
       })
       .addCase(getClients.fulfilled, (state, action) => {
         state.bots = action.payload;
-        state.loading = false;
+        state.loadingBots = false;
       })
       .addCase(getClients.rejected, (state, action) => {
-        state.error = action.payload;
-        state.loading = false;
+        state.errorBots = action.error.message;
+        state.loadingBots = false;
       })
-      // Handlers para getInboundCases
       .addCase(getInboundCases.pending, (state) => {
-        state.loading = true;
+        state.loadingCases = true;
+        state.errorCases = null;
       })
       .addCase(getInboundCases.fulfilled, (state, action) => {
         state.inboundCases = action.payload;
-        state.loading = false;
+        state.loadingCases = false;
       })
       .addCase(getInboundCases.rejected, (state, action) => {
-        state.error = action.payload;
-        state.loading = false;
+        state.errorCases = action.error.message;
+        state.loadingCases = false;
       });
   },
 });
 
-  
-  export default clientsSlice.reducer;
+export const { setFromDate, setUntilDate } = clientsSlice.actions;
+export default clientsSlice.reducer;

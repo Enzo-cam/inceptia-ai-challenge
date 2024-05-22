@@ -2,25 +2,31 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getClients, getInboundCases } from "../../redux/slices/clientsSlice";
 
+
 const ClientList = () => {
   const dispatch = useDispatch();
-  const { bots, loading, error } = useSelector((state) => state.clients);
-  const results = useSelector(state => state.clients.inboundCases.results);
+  const { bots, loading, error, dateFilter } = useSelector((state) => state.clients);
+  const { from: startDate, until: endDate } = dateFilter;
 
+  // Fetch inicial de los clientes
   useEffect(() => {
     dispatch(getClients());
   }, [dispatch]);
 
-  // console.log(results)
+  // Bot seleccionado, por defecto el primero de la lista si existe
+  const selectedBotId = bots.length > 0 ? bots[0].id : null;
+
+  // Observar cambios en las fechas y refetchear los casos del bot seleccionado
+  useEffect(() => {
+    if (selectedBotId) {
+      dispatch(getInboundCases({ botId: selectedBotId, startDate, endDate }));
+    }
+  }, [dispatch, startDate, endDate, selectedBotId]);
 
   const handleClientList = (botId) => {
-    dispatch(
-      getInboundCases({ botId, startDate: "2021-03-01", endDate: "2022-03-25" })
-    );
+    dispatch(getInboundCases({ botId, startDate, endDate }));
   };
 
-
-//   Aplicar la tabla, mostrar los distintos datos fetcheados desde aca
   return (
     <div className="w-full h-full bg-gray-50 flex flex-col items-center pt-6">
       <div className="w-full p-5">
