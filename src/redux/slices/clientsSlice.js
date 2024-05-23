@@ -11,6 +11,7 @@ const initialState = {
     from: "",
     until: "",
   },
+  activeFilter: 'Todos',  // Asegúrate de inicializar el filtro activo
 };
 
 // Thunk para obtener los clientes
@@ -67,10 +68,15 @@ const clientsSlice = createSlice({
   reducers: {
     setFromDate: (state, action) => {
       state.dateFilter.from = action.payload;
+      state.activeFilter = 'Todos';  // Resetear el filtro activo a 'Todos' cuando se cambia la fecha 'from'
     },
     setUntilDate: (state, action) => {
       state.dateFilter.until = action.payload;
+      state.activeFilter = 'Todos';  // Resetear el filtro activo a 'Todos' cuando se cambia la fecha 'from'
     },
+    setActiveFilter: (state, action) => {
+      state.activeFilter = action.payload;  
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -101,5 +107,5 @@ const clientsSlice = createSlice({
   },
 });
 
-export const { setFromDate, setUntilDate } = clientsSlice.actions;
+export const { setFromDate, setUntilDate, setActiveFilter } = clientsSlice.actions;
 export default clientsSlice.reducer;
