@@ -22,13 +22,23 @@ const initialState: ClientState = {
   activeFilter: 'Todos',
 };
 
-// Thunk para obtener los clientes
+const api = axios.create({
+  baseURL: process.env.REACT_APP_API_URL,
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});
+
+/**
+ * Acción asíncrona para obtener una lista de bots desde el servidor.
+ * Requiere autenticación y utiliza el token del usuario almacenado en el estado.
+*/
 export const getClients = createAsyncThunk<Bot[], void, { state: RootState, rejectValue: string }>(
   "clients/getClients",
   async (_, { getState, rejectWithValue }) => {
     try {
       const { user } = getState();
-      const response = await axios.get<Bot[]>("https://admindev.inceptia.ai/api/v1/clients/", {
+      const response = await api.get<Bot[]>("/clients/", {
         headers: {
           Authorization: `JWT ${user.token}`,
         },
@@ -40,12 +50,17 @@ export const getClients = createAsyncThunk<Bot[], void, { state: RootState, reje
   }
 );
 
+
+/**
+ * Acción asíncrona para obtener los casos entrantes de un bot específico dentro de un rango de fechas.
+ * Utiliza parámetros de filtrado y requiere autenticación.
+*/
 export const getInboundCases = createAsyncThunk<InboundCasesResponse, GetInboundCasesParams, { state: RootState, rejectValue: string }>(
   "clients/getInboundCases",
   async ({ botId, startDate, endDate }, { getState, rejectWithValue }) => {
     try {
       const { user } = getState();
-      const response = await axios.get<InboundCasesResponse>("https://admindev.inceptia.ai/api/v1/inbound-case/", {
+      const response = await api.get<InboundCasesResponse>("/inbound-case/", {
         headers: {
           Authorization: `JWT ${user.token}`,
         },
@@ -59,18 +74,22 @@ export const getInboundCases = createAsyncThunk<InboundCasesResponse, GetInbound
 );
 
 
-// Slice de Redux para manejar el estado de los clientes y sus casos
+
 const clientsSlice = createSlice({
   name: "clients",
   initialState,
+  /**
+   * Reducers para actualizar el estado del slice de clientes.
+   * Incluye funciones para ajustar las fechas de filtrado y el filtro activo.
+  */ 
   reducers: {
     setFromDate: (state, action: PayloadAction<string>) => {
       state.dateFilter.from = action.payload;
-      state.activeFilter = 'Todos';  // Resetear el filtro activo a 'Todos' cuando se cambia la fecha 'from'
+      state.activeFilter = 'Todos'; 
     },
     setUntilDate: (state, action: PayloadAction<string>) => {
       state.dateFilter.until = action.payload;
-      state.activeFilter = 'Todos';  // Resetear el filtro activo a 'Todos' cuando se cambia la fecha 'from'
+      state.activeFilter = 'Todos'; 
     },
     setActiveFilter: (state, action: PayloadAction<string>) => {
       state.activeFilter = action.payload;  

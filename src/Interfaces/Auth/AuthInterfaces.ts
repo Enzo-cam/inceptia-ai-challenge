@@ -1,4 +1,3 @@
-// Interfaces para el estado y las credenciales de login
 export interface LoginCredentials {
     email: string;
     password: string;

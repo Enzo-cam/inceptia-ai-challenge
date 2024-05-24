@@ -3,6 +3,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { getClients, getInboundCases } from "../../redux/slices/clientsSlice";
 import { AppDispatch, RootState } from "../../redux/store";
 import { Bot } from "../../Interfaces/Clients/ClientInterfaces";
+/**
+ * Componente `ClientList` que muestra una lista de clientes y permite la selección de un cliente para cargar casos asociados.
+ * Al seleccionar un cliente, se desencadena la carga de casos entrantes para ese cliente específico durante un rango de fechas especificado.
+ * Utiliza Redux para gestionar el estado de la carga de clientes y casos, así como para manejar errores.
+ */
 
 const ClientList = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -21,10 +26,16 @@ const ClientList = () => {
     }
   }, [dispatch, startDate, endDate, selectedBotId]);
 
-  const handleClientList = (botId: number) => {
-    setSelectedBotId(botId);
-    dispatch(getInboundCases({ botId, startDate, endDate }));
-  };
+  /**
+ * Maneja la selección de un cliente (bot) de la lista.
+ * Establece el ID del bot seleccionado y dispara la carga de casos entrantes para ese bot.
+ *
+ * @param {number} botId - El ID del bot que fue seleccionado.
+ */
+const handleClientList = (botId: number) => {
+  setSelectedBotId(botId);
+  dispatch(getInboundCases({ botId, startDate, endDate }));
+};
 
   return (
     <div className="w-full h-full bg-gray-100 flex flex-col items-center pt-1 border-r-2 border-black">

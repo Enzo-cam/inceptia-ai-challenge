@@ -1,7 +1,6 @@
-// Tipos para el estado y las acciones
 export interface ClientState {
   bots: Bot[];
-  inboundCases: InboundCasesResponse;  // Actualizado para usar la nueva interfaz
+  inboundCases: InboundCasesResponse; 
   loadingBots: boolean;
   loadingCases: boolean;
   errorBots: string | null;
@@ -16,7 +15,6 @@ export interface ClientState {
 export interface Bot {
   id: number;
   name: string;
-  // Otros campos relevantes para los bots
 }
 
 export interface GetInboundCasesParams {

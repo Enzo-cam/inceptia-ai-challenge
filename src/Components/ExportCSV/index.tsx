@@ -4,11 +4,16 @@ import { CSVLink } from 'react-csv';
 import { RootState } from '../../redux/store';
 import { InboundCasesResponse } from '../../Interfaces/Clients/ClientInterfaces';
 
+/**
+ * Componente `ExportCSVButton` para exportar datos de casos entrantes a un archivo CSV.
+ * Extrae los datos de casos entrantes del estado de Redux, los transforma en el formato necesario,
+ * y proporciona un enlace para descargar estos datos como un archivo CSV.
+ */
+
+
 const ExportCSVButton = () => {
-  // Selecciona directamente el array de casos
   const inboundCases = useSelector((state: RootState) => state.clients.inboundCases as unknown as InboundCasesResponse);
 
-  // Verifica que inboundCases.results exista antes de intentar usar map
   const csvData = inboundCases.results.map(item => ({
     last_updated: item.last_updated,
     case_uuid: item.case_uuid,

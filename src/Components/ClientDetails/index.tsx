@@ -4,16 +4,26 @@ import Filters from "../DateFilter";
 import StateFilters from "../StatusFilter";
 import ExportCSVButton from "../ExportCSV";
 import { useSelector } from "react-redux";
-import { ClientState, InboundCase } from "../../Interfaces/Clients/ClientInterfaces";
+import {
+  ClientState,
+  InboundCase,
+} from "../../Interfaces/Clients/ClientInterfaces";
 import { RootState } from "../../redux/store";
-
 
 interface TableClientDetailsProps {}
 
+/**
+ * Componente `TableClientDetails` que muestra detalles de los clientes en una tabla.
+ * Permite filtrar datos por varios criterios como fecha, estado, y un campo de búsqueda general.
+ * También incluye funcionalidades para exportar los datos filtrados a un archivo CSV.
+ *
+ * Utiliza el estado de Redux para acceder a los datos de los casos y el estado del filtro activo.
+ */
 
 const TableClientDetails: React.FC<TableClientDetailsProps> = () => {
-  
-  const { inboundCases, activeFilter } = useSelector((state: RootState) => state.clients as ClientState);
+  const { inboundCases, activeFilter } = useSelector(
+    (state: RootState) => state.clients as ClientState
+  );
   const [dataBot, setDataBot] = useState<InboundCase[]>([]);
 
   useEffect(() => {
@@ -27,6 +37,12 @@ const TableClientDetails: React.FC<TableClientDetailsProps> = () => {
     }
   }, [inboundCases.results, activeFilter]);
 
+  /**
+   * Maneja cambios en el campo de búsqueda.
+   * Filtra `dataBot` basándose en la entrada del usuario en varios campos de datos.
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - Evento del cambio de entrada.
+   */
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toLowerCase();
     if (!value) {
@@ -51,7 +67,6 @@ const TableClientDetails: React.FC<TableClientDetailsProps> = () => {
     }
   };
 
-
   const customStyles = {
     table: {
       style: {
@@ -74,11 +89,11 @@ const TableClientDetails: React.FC<TableClientDetailsProps> = () => {
     cells: {
       style: {
         borderRight: "1px solid black",
-        minWidth: "150px", // Ajusta según la necesidad
-        minHeight: "auto", // Permite que la altura de la celda se ajuste al contenido
-        whiteSpace: "normal", // Permite que el texto ajuste
-        overflow: "visible", // Asegúrate de que el contenido no se oculte
-        textOverflow: "clip", // Evita elipsis
+        minWidth: "150px",
+        minHeight: "auto",
+        whiteSpace: "normal",
+        overflow: "visible",
+        textOverflow: "clip",
       },
     },
   };
@@ -88,56 +103,69 @@ const TableClientDetails: React.FC<TableClientDetailsProps> = () => {
       {
         name: "Gestionado",
         maxWidth: "200px",
-        selector: (row: { last_updated: any; }) => row.last_updated,
+        selector: (row: { last_updated: any }) => row.last_updated,
       },
       {
         name: "ID Caso",
         maxWidth: "90px",
-        selector: (row: { case_uuid: any; }) => row.case_uuid,
+        selector: (row: { case_uuid: any }) => row.case_uuid,
       },
       {
         name: "Teléfono",
         maxWidth: "200px",
-        selector: (row: { phone: any; }) => row.phone,
+        selector: (row: { phone: any }) => row.phone,
       },
       {
         name: "dni",
         maxWidth: "90px",
-        selector: (row: { extra_metadata: { dni: any; }; }) => row.extra_metadata.dni,
+        selector: (row: { extra_metadata: { dni: any } }) =>
+          row.extra_metadata.dni,
       },
       {
         name: "group",
         maxWidth: "90px",
-        selector: (row: { extra_metadata: { grupo: any; }; }) => row.extra_metadata.grupo,
+        selector: (row: { extra_metadata: { grupo: any } }) =>
+          row.extra_metadata.grupo,
       },
       {
         name: "order",
         maxWidth: "90px",
-        selector: (row: { extra_metadata: { orden: any; }; }) => row.extra_metadata.orden,
+        selector: (row: { extra_metadata: { orden: any } }) =>
+          row.extra_metadata.orden,
       },
       {
         name: "Estado",
-        selector: (row: { case_result: { name: any; }; }) => row.case_result.name,
-        cell: (row: { case_result: { name: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined; }; }) => (
-          <div >{row.case_result.name}</div>
-        ), // Tooltip básico
+        selector: (row: { case_result: { name: any } }) => row.case_result.name,
+        cell: (row: {
+          case_result: {
+            name:
+              | string
+              | number
+              | boolean
+              | React.ReactElement<
+                  any,
+                  string | React.JSXElementConstructor<any>
+                >
+              | Iterable<React.ReactNode>
+              | null
+              | undefined;
+          };
+        }) => <div>{row.case_result.name}</div>,
       },
     ],
     []
   );
 
-
-
-    return (
-      <div>
-        {inboundCases.results && inboundCases.results.length > 0 ? (
+  return (
+    <div>
+      {inboundCases.results && inboundCases.results.length > 0 ? (
         <>
           <div className="flex justify-between">
             <input
               type="text"
               className="text-left w-96 p-1 mb-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
               placeholder="Buscar por ID, Teléfono, DNI, Grupo, Orden o Estado"
-              onChange={onChange} // Implementar si es necesario
+              onChange={onChange}
             />
             <Filters />
           </div>
@@ -164,7 +192,7 @@ const TableClientDetails: React.FC<TableClientDetailsProps> = () => {
           />
         </>
       ) : (
-<div className="p-10 mx-52 text-center border-2 border-black mt-20">
+        <div className="p-10 mx-52 text-center border-2 border-black mt-20">
           <p className="text-xl">
             Seleccione un bot para mostrar los detalles de los casos.
           </p>

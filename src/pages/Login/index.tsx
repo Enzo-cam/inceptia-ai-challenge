@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getUser } from "../../redux/slices/authSlice";
 import { AppDispatch, RootState } from "../../redux/store";
-// import Loading from "../../SVG/load.svg";
 import isEmpty from "lodash/isEmpty";
 import { HashLoader } from "react-spinners";
 
@@ -31,8 +30,6 @@ export default function Login() {
       navigate("/reports");
     }
   }, [token, navigate]);
-
-// Todo: Pasar a TS, agregar comentarios, levantar y mandar
 
   return (
     <div className="w-full min-h-screen bg-gray-50 flex flex-col justify-center items-center pt-6 sm:pt-0">

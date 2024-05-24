@@ -1,11 +1,16 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setFromDate, setUntilDate } from "../../redux/slices/clientsSlice";
-import { AppDispatch, RootState } from "../../redux/store";  // Importa la definición de tu estado global
+import { AppDispatch, RootState } from "../../redux/store"; 
+/**
+ * Componente `Filters` para seleccionar rangos de fechas.
+ * Permite a los usuarios elegir fechas de inicio y fin para aplicar filtros de fecha en la visualización de datos.
+ * Las fechas seleccionadas se gestionan a través del estado de Redux y se utilizan para filtrar datos en otros componentes.
+ */
+
 
 const Filters = () => {
     const dispatch = useDispatch<AppDispatch>();
-    // Utiliza RootState para tipar la respuesta de useSelector
     const { from, until } = useSelector((state: RootState) => state.clients.dateFilter);
 
     return (
