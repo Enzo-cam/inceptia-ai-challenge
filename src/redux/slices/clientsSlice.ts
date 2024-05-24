@@ -104,5 +104,6 @@ const clientsSlice = createSlice({
       });
   },
 });
+
 export const { setFromDate, setUntilDate, setActiveFilter } = clientsSlice.actions;
 export default clientsSlice.reducer;
