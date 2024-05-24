@@ -1,11 +1,16 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
-import { Bot, ClientState, GetInboundCasesParams, InboundCase } from "../../Interfaces/Clients/ClientInterfaces";
+import { Bot, ClientState, GetInboundCasesParams, InboundCase, InboundCasesResponse } from "../../Interfaces/Clients/ClientInterfaces";
 import { RootState } from "../store";
 
 const initialState: ClientState = {
   bots: [],
-  inboundCases: [],
+  inboundCases: {
+    count: 0,
+    next: null,
+    previous: null,
+    results: []
+  },
   loadingBots: false,
   loadingCases: false,
   errorBots: null,
@@ -35,12 +40,12 @@ export const getClients = createAsyncThunk<Bot[], void, { state: RootState, reje
   }
 );
 
-export const getInboundCases = createAsyncThunk<InboundCase[], GetInboundCasesParams, { state: RootState, rejectValue: string }>(
+export const getInboundCases = createAsyncThunk<InboundCasesResponse, GetInboundCasesParams, { state: RootState, rejectValue: string }>(
   "clients/getInboundCases",
   async ({ botId, startDate, endDate }, { getState, rejectWithValue }) => {
     try {
       const { user } = getState();
-      const response = await axios.get<InboundCase[]>("https://admindev.inceptia.ai/api/v1/inbound-case/", {
+      const response = await axios.get<InboundCasesResponse>("https://admindev.inceptia.ai/api/v1/inbound-case/", {
         headers: {
           Authorization: `JWT ${user.token}`,
         },
@@ -53,6 +58,7 @@ export const getInboundCases = createAsyncThunk<InboundCase[], GetInboundCasesPa
   }
 );
 
+
 // Slice de Redux para manejar el estado de los clientes y sus casos
 const clientsSlice = createSlice({
   name: "clients",
@@ -63,10 +69,10 @@ const clientsSlice = createSlice({
       state.activeFilter = 'Todos';  // Resetear el filtro activo a 'Todos' cuando se cambia la fecha 'from'
     },
     setUntilDate: (state, action: PayloadAction<string>) => {
-        state.dateFilter.until = action.payload;
-        state.activeFilter = 'Todos';  // Resetear el filtro activo a 'Todos' cuando se cambia la fecha 'from'
+      state.dateFilter.until = action.payload;
+      state.activeFilter = 'Todos';  // Resetear el filtro activo a 'Todos' cuando se cambia la fecha 'from'
     },
-    setActiveFilter: (state, action) => {
+    setActiveFilter: (state, action: PayloadAction<string>) => {
       state.activeFilter = action.payload;  
     }
   },
@@ -81,7 +87,6 @@ const clientsSlice = createSlice({
         state.loadingBots = false;
       })
       .addCase(getClients.rejected, (state, action) => {
-        // Asegúrate de que el valor asignado nunca sea 'undefined'
         state.errorBots = action.error.message ?? null;
         state.loadingBots = false;
       })
@@ -94,12 +99,10 @@ const clientsSlice = createSlice({
         state.loadingCases = false;
       })
       .addCase(getInboundCases.rejected, (state, action) => {
-        // Asegúrate de que el valor asignado nunca sea 'undefined'
         state.errorCases = action.error.message ?? null;
         state.loadingCases = false;
-    });
+      });
   },
 });
-
 export const { setFromDate, setUntilDate, setActiveFilter } = clientsSlice.actions;
 export default clientsSlice.reducer;

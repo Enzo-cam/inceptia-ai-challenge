@@ -1,7 +1,7 @@
 // Tipos para el estado y las acciones
 export interface ClientState {
   bots: Bot[];
-  inboundCases: InboundCase[];  // Change this line
+  inboundCases: InboundCasesResponse;  // Actualizado para usar la nueva interfaz
   loadingBots: boolean;
   loadingCases: boolean;
   errorBots: string | null;

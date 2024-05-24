@@ -10,7 +10,6 @@ export default function Reports() {
                 <ClientList />
             </div>
             <div className="w-full flex flex-col p-4">
-                {/* Directamente renderiza TableClientDetails sin condiciones adicionales aquí */}
                 <TableClientDetails />
             </div>
         </div>

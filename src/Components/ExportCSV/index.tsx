@@ -2,15 +2,14 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { CSVLink } from 'react-csv';
 import { RootState } from '../../redux/store';
-import { InboundCase} from '../../Interfaces/Clients/ClientInterfaces';
-import { InboundCasesResponse } from '../../Interfaces/Inbound/InboundInterfaces';
+import { InboundCasesResponse } from '../../Interfaces/Clients/ClientInterfaces';
 
 const ExportCSVButton = () => {
-  const dataBot = useSelector((state: RootState) => state.clients.inboundCases as unknown as InboundCasesResponse);
+  // Selecciona directamente el array de casos
+  const inboundCases = useSelector((state: RootState) => state.clients.inboundCases as unknown as InboundCasesResponse);
 
-
-  // Verifica que dataBot.results exista antes de intentar usar map
-  const csvData = dataBot.results.map(item => ({
+  // Verifica que inboundCases.results exista antes de intentar usar map
+  const csvData = inboundCases.results.map(item => ({
     last_updated: item.last_updated,
     case_uuid: item.case_uuid,
     phone: item.phone.toString(),

@@ -4,37 +4,42 @@ import Filters from "../DateFilter";
 import StateFilters from "../StatusFilter";
 import ExportCSVButton from "../ExportCSV";
 import { useSelector } from "react-redux";
+import { ClientState, InboundCase } from "../../Interfaces/Clients/ClientInterfaces";
+import { RootState } from "../../redux/store";
 
-const TableClientDetails = () => {
-  const { inboundCases, activeFilter } = useSelector((state) => state.clients);
-  const [dataBot, setDataBot] = useState([]);
+
+interface TableClientDetailsProps {}
+
+
+const TableClientDetails: React.FC<TableClientDetailsProps> = () => {
+  
+  const { inboundCases, activeFilter } = useSelector((state: RootState) => state.clients as ClientState);
+  const [dataBot, setDataBot] = useState<InboundCase[]>([]);
 
   useEffect(() => {
     if (activeFilter === "Todos") {
       setDataBot(inboundCases.results || []);
     } else {
-      const filteredData = (inboundCases.results || []).filter(
-        (item) => item.case_result.name === activeFilter
+      const filteredData = inboundCases.results.filter(
+        (item: InboundCase) => item.case_result.name === activeFilter
       );
       setDataBot(filteredData);
     }
   }, [inboundCases.results, activeFilter]);
 
-  const onChange = (e) => {
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toLowerCase();
     if (!value) {
-      // Si el input está vacío, restablece los datos.
       if (activeFilter === "Todos") {
         setDataBot(inboundCases.results || []);
       } else {
         const filteredData = (inboundCases.results || []).filter(
-          (item) => item.case_result.name === activeFilter
+          (item: InboundCase) => item.case_result.name === activeFilter
         );
         setDataBot(filteredData);
       }
     } else {
-      // Aplica el filtro basado en el valor ingresado.
-      const filteredData = dataBot.filter((item) => {
+      const filteredData = dataBot.filter((item: InboundCase) => {
         return columns.some((column) => {
           const fieldValue = column.selector(item);
           return (
@@ -45,6 +50,7 @@ const TableClientDetails = () => {
       setDataBot(filteredData);
     }
   };
+
 
   const customStyles = {
     table: {
@@ -82,53 +88,49 @@ const TableClientDetails = () => {
       {
         name: "Gestionado",
         maxWidth: "200px",
-        selector: (row) => row.last_updated,
+        selector: (row: { last_updated: any; }) => row.last_updated,
       },
       {
         name: "ID Caso",
         maxWidth: "90px",
-        selector: (row) => row.case_uuid,
+        selector: (row: { case_uuid: any; }) => row.case_uuid,
       },
       {
         name: "Teléfono",
         maxWidth: "200px",
-        selector: (row) => row.phone,
+        selector: (row: { phone: any; }) => row.phone,
       },
       {
         name: "dni",
         maxWidth: "90px",
-        selector: (row) => row.extra_metadata.dni,
+        selector: (row: { extra_metadata: { dni: any; }; }) => row.extra_metadata.dni,
       },
       {
         name: "group",
         maxWidth: "90px",
-        selector: (row) => row.extra_metadata.grupo,
+        selector: (row: { extra_metadata: { grupo: any; }; }) => row.extra_metadata.grupo,
       },
       {
         name: "order",
         maxWidth: "90px",
-        selector: (row) => row.extra_metadata.orden,
+        selector: (row: { extra_metadata: { orden: any; }; }) => row.extra_metadata.orden,
       },
       {
         name: "Estado",
-        selector: (row) => row.case_result.name,
-        cell: (row) => (
-          <div title={row.case_result.name}>{row.case_result.name}</div>
+        selector: (row: { case_result: { name: any; }; }) => row.case_result.name,
+        cell: (row: { case_result: { name: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined; }; }) => (
+          <div >{row.case_result.name}</div>
         ), // Tooltip básico
       },
     ],
     []
   );
 
-  return (
-    <div>
-      {!inboundCases.results ? (
-        <div className="p-10 mx-52 text-center border-2 border-black mt-20">
-          <p className="text-xl">
-            Seleccione un bot para mostrar los detalles de los casos.
-          </p>
-        </div>
-      ) : (
+
+
+    return (
+      <div>
+        {inboundCases.results && inboundCases.results.length > 0 ? (
         <>
           <div className="flex justify-between">
             <input
@@ -149,7 +151,7 @@ const TableClientDetails = () => {
                 "Cliente no encontrado en DB",
               ]}
             />
-            {/* <ExportCSVButton /> */}
+            <ExportCSVButton />
           </div>
           <DataTable
             fixedHeaderScrollHeight="full"
@@ -161,6 +163,12 @@ const TableClientDetails = () => {
             customStyles={customStyles}
           />
         </>
+      ) : (
+<div className="p-10 mx-52 text-center border-2 border-black mt-20">
+          <p className="text-xl">
+            Seleccione un bot para mostrar los detalles de los casos.
+          </p>
+        </div>
       )}
     </div>
   );
