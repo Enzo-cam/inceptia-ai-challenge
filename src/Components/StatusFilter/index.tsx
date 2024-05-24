@@ -12,7 +12,7 @@ const StateFilters: React.FC<StateFiltersProps> = ({ states }) => {
   const activeFilter = useSelector((state: RootState) => state.clients.activeFilter); 
 
   /**
- * Maneja el clic en un filtro específico.
+ * Maneja el click en un filtro específico.
  * Actualiza el filtro activo en el estado global de Redux con el estado seleccionado.
  *
  * @param {string} filter - El filtro seleccionado por el usuario.

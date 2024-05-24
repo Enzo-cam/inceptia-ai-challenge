@@ -6,6 +6,13 @@ import { AppDispatch, RootState } from "../../redux/store";
 import isEmpty from "lodash/isEmpty";
 import { HashLoader } from "react-spinners";
 
+/**
+ * Componente `Login` para autenticar usuarios.
+ * Permite a los usuarios ingresar con un email y contraseña, maneja la autenticación
+ * y redirecciona al usuario a la página de reportes si el token de autenticación está presente.
+ * Muestra un spinner de carga durante el proceso de autenticación.
+ */
+
 export default function Login() {
   const [email, setEmail] = useState<string>("reactdev@iniceptia.ai");
   const [password, setPassword] = useState<string>("4eSBbHqiCTPdBCTj");
@@ -15,15 +22,21 @@ export default function Login() {
   const navigate = useNavigate();
   const { token, isLoading } = useSelector((state: RootState) => state.user);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    try {
-      await dispatch(getUser({ email, password })).unwrap();
-      setError(null);
-    } catch (err: any) {
-      setError(err.message || "Email y/o contraseña son incorrectos");
-    }
-  };
+ /**
+ * Maneja el envío del formulario de autenticación.
+ * Intenta autenticar al usuario y maneja errores en caso de falla.
+ *
+ * @param {React.FormEvent<HTMLFormElement>} e - Evento del formulario para prevenir el comportamiento por defecto.
+ */
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  try {
+    await dispatch(getUser({ email, password })).unwrap();
+    setError(null);
+  } catch (err: any) {
+    setError(err.message || "Email y/o contraseña son incorrectos");
+  }
+};
 
   useEffect(() => {
     if (!isEmpty(token)) {
@@ -38,8 +51,6 @@ export default function Login() {
         {isLoading ? (
           <div className="flex justify-center">
             <HashLoader color="#6b0505" />
-
-            {/* <img src={Loading} alt="loading" height="100px" /> */}
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
