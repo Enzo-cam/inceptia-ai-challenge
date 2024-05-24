@@ -1,12 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { ErrorResponse, LoginCredentials, UserData, UserState } from '../../Interfaces/Auth/AuthInterfaces';
 
-// interface LoginCredentials {
-//   email: string;
-//   password: string;
-// }
-
-// Configura la instancia de Axios y definiendo la URL
 const api = axios.create({
   baseURL: 'https://admindev.inceptia.ai/api/v1',
   headers: {
@@ -14,21 +9,18 @@ const api = axios.create({
   }
 });
 
-// Async thunk para el login
-export const getUser = createAsyncThunk(
+export const getUser = createAsyncThunk<UserData, LoginCredentials, { rejectValue: ErrorResponse }>(
   'user/login',
-  // LoginCredentials
   async ({ email, password }, { rejectWithValue }) => {
     try {
-      const response = await api.post('/login/', { email, password });
-      return response.data; 
-    } catch (error) {
-      return rejectWithValue(error.response.data);
+      const response = await api.post<{ token: string } & UserData>('/login/', { email, password });
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue({ message: error.response.data });
     }
   }
 );
 
-// Slice para manejar el estado del login
 const userSlice = createSlice({
     name: 'user',
     initialState: {
@@ -36,7 +28,7 @@ const userSlice = createSlice({
       token: null,
       isLoading: false,
       error: null
-    },
+    } as UserState,
     reducers: {},
     extraReducers: (builder) => {
       builder
@@ -48,16 +40,16 @@ const userSlice = createSlice({
           state.userData = {
             id: action.payload.id,
             email: action.payload.email,
-            firstName: action.payload.first_name,
-            lastName: action.payload.last_name,
+            first_name: action.payload.first_name,
+            last_name: action.payload.last_name,
             groups: action.payload.groups,
-            isActive: action.payload.is_active,
+            is_active: action.payload.is_active,
           };
-          state.token = action.payload.token;
+          state.token = action.payload?.token ?? null;
           state.isLoading = false;
         })
         .addCase(getUser.rejected, (state, action) => {
-          state.error = action.payload;
+          state.error = action.payload?.message ?? null;
           state.isLoading = false;
         });
     }

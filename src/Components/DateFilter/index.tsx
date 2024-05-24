@@ -1,11 +1,12 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setFromDate, setUntilDate } from "../../redux/slices/clientsSlice";
-
+import { AppDispatch, RootState } from "../../redux/store";  // Importa la definición de tu estado global
 
 const Filters = () => {
-    const dispatch = useDispatch();
-    const { from, until } = useSelector((state) => state.clients.dateFilter);
+    const dispatch = useDispatch<AppDispatch>();
+    // Utiliza RootState para tipar la respuesta de useSelector
+    const { from, until } = useSelector((state: RootState) => state.clients.dateFilter);
 
     return (
         <div className="flex space-x-4 p-2 bg-white shadow rounded-lg justify-center border items-center">

@@ -6,14 +6,16 @@ import ExportCSVButton from "../ExportCSV";
 import { useSelector } from "react-redux";
 
 const TableClientDetails = () => {
-  const { inboundCases, activeFilter } = useSelector(state => state.clients);
+  const { inboundCases, activeFilter } = useSelector((state) => state.clients);
   const [dataBot, setDataBot] = useState([]);
 
   useEffect(() => {
-    if (activeFilter === 'Todos') {
+    if (activeFilter === "Todos") {
       setDataBot(inboundCases.results || []);
     } else {
-      const filteredData = (inboundCases.results || []).filter(item => item.case_result.name === activeFilter);
+      const filteredData = (inboundCases.results || []).filter(
+        (item) => item.case_result.name === activeFilter
+      );
       setDataBot(filteredData);
     }
   }, [inboundCases.results, activeFilter]);
@@ -21,24 +23,28 @@ const TableClientDetails = () => {
   const onChange = (e) => {
     const value = e.target.value.toLowerCase();
     if (!value) {
-        // Si el input está vacío, restablece los datos.
-        if (activeFilter === 'Todos') {
-            setDataBot(inboundCases.results || []);
-        } else {
-            const filteredData = (inboundCases.results || []).filter(item => item.case_result.name === activeFilter);
-            setDataBot(filteredData);
-        }
-    } else {
-        // Aplica el filtro basado en el valor ingresado.
-        const filteredData = dataBot.filter((item) => {
-            return columns.some((column) => {
-                const fieldValue = column.selector(item);
-                return fieldValue && fieldValue.toString().toLowerCase().includes(value);
-            });
-        });
+      // Si el input está vacío, restablece los datos.
+      if (activeFilter === "Todos") {
+        setDataBot(inboundCases.results || []);
+      } else {
+        const filteredData = (inboundCases.results || []).filter(
+          (item) => item.case_result.name === activeFilter
+        );
         setDataBot(filteredData);
+      }
+    } else {
+      // Aplica el filtro basado en el valor ingresado.
+      const filteredData = dataBot.filter((item) => {
+        return columns.some((column) => {
+          const fieldValue = column.selector(item);
+          return (
+            fieldValue && fieldValue.toString().toLowerCase().includes(value)
+          );
+        });
+      });
+      setDataBot(filteredData);
     }
-};
+  };
 
   const customStyles = {
     table: {
@@ -118,7 +124,9 @@ const TableClientDetails = () => {
     <div>
       {!inboundCases.results ? (
         <div className="p-10 mx-52 text-center border-2 border-black mt-20">
-          <p className="text-xl">Seleccione un bot para mostrar los detalles de los casos.</p>
+          <p className="text-xl">
+            Seleccione un bot para mostrar los detalles de los casos.
+          </p>
         </div>
       ) : (
         <>
@@ -132,8 +140,16 @@ const TableClientDetails = () => {
             <Filters />
           </div>
           <div className="flex justify-between items-center">
-            <StateFilters states={['Mail Enviado', 'Transferido', 'Indefinido', 'Cortó cliente', 'Cliente no encontrado en DB']} />
-            <ExportCSVButton />
+            <StateFilters
+              states={[
+                "Mail Enviado",
+                "Transferido",
+                "Indefinido",
+                "Cortó cliente",
+                "Cliente no encontrado en DB",
+              ]}
+            />
+            {/* <ExportCSVButton /> */}
           </div>
           <DataTable
             fixedHeaderScrollHeight="full"

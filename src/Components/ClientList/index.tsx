@@ -1,29 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getClients, getInboundCases } from "../../redux/slices/clientsSlice";
+import { AppDispatch, RootState } from "../../redux/store";
+import { Bot } from "../../Interfaces/Clients/ClientInterfaces";
 
 const ClientList = () => {
-  const dispatch = useDispatch();
-  const { bots, loading, error, dateFilter } = useSelector((state) => state.clients);
+  const dispatch = useDispatch<AppDispatch>();
+  const { bots, loadingBots, errorBots, dateFilter } = useSelector((state: RootState) => state.clients);
   const { from: startDate, until: endDate } = dateFilter;
 
-  // Estado para el bot seleccionado
-  const [selectedBotId, setSelectedBotId] = useState(null);
+  const [selectedBotId, setSelectedBotId] = useState<number | null>(null);
 
-  // Fetch inicial de los clientes
   useEffect(() => {
     dispatch(getClients());
   }, [dispatch]);
 
-  // Observar cambios en las fechas y el bot seleccionado, y refetchear los casos
   useEffect(() => {
     if (selectedBotId) {
       dispatch(getInboundCases({ botId: selectedBotId, startDate, endDate }));
     }
   }, [dispatch, startDate, endDate, selectedBotId]);
 
-  // Manejador para actualizar el bot seleccionado y fetchear sus casos
-  const handleClientList = (botId) => {
+  const handleClientList = (botId: number) => {
     setSelectedBotId(botId);
     dispatch(getInboundCases({ botId, startDate, endDate }));
   };
@@ -31,11 +29,11 @@ const ClientList = () => {
   return (
     <div className="w-full h-full bg-gray-100 flex flex-col items-center pt-1 border-r-2 border-black">
       <div className="w-full p-5">
-        <h2 className="mb-9 text-2xl font-bold ">Clientes</h2>
-        {loading && <p>Loading...</p>}
-        {error && <p>{error}</p>}
+        <h2 className="mb-9 text-2xl font-bold">Clientes</h2>
+        {loadingBots && <p>Loading...</p>}
+        {errorBots && <p>{errorBots}</p>}
         <ul className="flex flex-col gap-1">
-          {bots.map((bot) => (
+          {bots.map((bot: Bot) => (
             <li key={bot.id}>
               <button
                 onClick={() => handleClientList(bot.id)}
